@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>臺灣經濟時空飛船</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root { --navy:#081527; --cream:#f4f5ed; --cyan:#62dfd6; --orange:#ffbb73; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:'Noto Sans TC',sans-serif; color:var(--cream); }
+    .app-shell { width:100%; min-height:100%; overflow:hidden; position:relative; background-color:#081527; background-image:radial-gradient(circle at 20% 15%,#224565 0,transparent 34%),radial-gradient(circle at 84% 74%,#183851 0,transparent 32%); }
+    .app-shell:before,.app-shell:after { content:""; position:absolute; inset:-30%; pointer-events:none; background:radial-gradient(circle, #62dfd61c 0 1px, transparent 2px); background-size:83px 83px; animation:drift 24s linear infinite; }
+    .app-shell:after { background-size:127px 127px; opacity:.45; animation-duration:38s; animation-direction:reverse; }
+    .starfield { background-image:radial-gradient(#ffffff88 1px,transparent 1px); background-size:37px 37px; }
+    @keyframes drift { from { transform:translate3d(0,0,0) rotate(0deg); } to { transform:translate3d(5%,4%,0) rotate(8deg); } }
+    @media (min-width:768px) and (max-width:1100px) { header,main { max-width:900px!important; } .mission-card { padding:2.5rem!important; } .choice { min-height:58px; } }
+    @media (prefers-reduced-motion:reduce) { .app-shell:before,.app-shell:after { animation:none; } }
+    .mission-card { border:1px solid #426077; box-shadow:0 28px 85px #020a17aa,inset 0 1px #ffffff1c; }
+    .eyebrow { font-family:'Space Mono',monospace; letter-spacing:.14em; }
+    .orbit { width:170px;height:170px;border:1px solid #62dfd65e;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 0 0 20px #62dfd60b,0 0 0 42px #62dfd607; }
+    .orbit:before { content:"";position:absolute;width:9px;height:9px;background:var(--orange);border-radius:50%;top:15px;right:20px;box-shadow:0 0 18px var(--orange); }
+    .ship { font-size:74px;transform:rotate(-35deg);filter:drop-shadow(0 8px 18px #62dfd677);animation:shipFloat 3.6s ease-in-out infinite; }
+    @keyframes shipFloat { 0%,100% { transform:translateY(0) rotate(-35deg); } 50% { transform:translateY(-13px) rotate(-29deg); } }
+    .energy-dot { width:21px;height:11px;border:1px solid #6a8997;border-radius:4px;background:#203a50;transition:background .3s,transform .3s,box-shadow .3s; }
+    .energy-dot.on { animation:energyPulse .5s ease both; }
+    @keyframes energyPulse { 0% { transform:scale(.72); } 65% { transform:scale(1.18); } 100% { transform:scale(1); } }
+    .energy-dot.on { background:var(--cyan);box-shadow:0 0 12px #62dfd688;border-color:var(--cyan); }
+    .choice { border:1px solid #49677b;transition:transform .18s,border-color .18s,background .18s; }
+    .choice:not(:disabled):hover { transform:translateX(5px);border-color:var(--cyan);background:#23465b!important; }
+    .choice:disabled { cursor:default; }
+    .choice.correct { border-color:var(--cyan);background:#185a58!important; }
+    .choice.incorrect { border-color:#fa9d89;background:#654347!important; }
+    .primary { transition:transform .2s,filter .2s; }
+    .primary:hover { transform:translateY(-2px);filter:brightness(1.07); }
+    button:focus-visible { outline:3px solid #fff;outline-offset:4px; }
+    [hidden] { display:none!important; }
+    .reveal { animation:rise .45s ease both; }
+    @keyframes rise { from { opacity:0;transform:translateY(14px); } to { opacity:1;transform:translateY(0); } }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation-duration:.01ms!important;transition-duration:.01ms!important; } }
+  </style>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+<script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+
+
+
+<style>
+.mission-card{background:#10283e;} .canva-panel{background-color:#18364d;color:#f4f5ed;} .canva-button.primary{background:#62dfd6;color:#092338;} .canva-button.choice{background:#193a52;color:#f4f5ed;font-weight:600;text-align:left;} .canva-button.choice:disabled{opacity:1;} .canva-text{color:#f4f5ed;} .canva-tag{color:#ffbb73;} .canva-input{font-size:16px;} #page-title{font-size:clamp(2rem,5vw,3.5rem);} [data-template-id="page-title"]{font-size:clamp(2rem,5vw,3.5rem);} .level h2{font-size:clamp(1.25rem,3vw,1.8rem);} .canva-button{cursor:pointer;} .canva-button:disabled{cursor:default;} @media(max-width:640px){.orbit{width:125px;height:125px}.ship{font-size:55px}}
+</style></head>
+<body class="w-full" data-template-id="__page-root">
+<div class="app-shell starfield w-full min-h-screen">
+<header class="max-w-5xl mx-auto px-5 pt-7 sm:pt-10 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span aria-hidden="true" class="text-3xl">✦</span><span class="canva-text eyebrow font-bold" data-template-id="brand">臺灣經濟時空飛船</span>
+</div><span class="canva-tag eyebrow border border-[#557486] rounded-full px-3 py-2" data-template-id="header-tag">社會科 × 時空冒險</span>
+</header>
+<main class="max-w-5xl mx-auto px-5 py-8 sm:py-12">
+<div class="canva-panel mission-card rounded-[28px] p-6 sm:p-10 lg:p-12" data-template-id="mission-panel">
+<div class="grid lg:grid-cols-[1fr_210px] gap-8 items-center border-b border-[#47647a] pb-9 mb-8">
+<div>
+<p class="canva-text eyebrow mb-4" data-template-id="kicker">TIME TRAVEL · ECONOMY MISSION</p>
+<h1 class="canva-text font-extrabold leading-tight max-w-xl" data-template-id="page-title">臺灣經濟時空飛船 🚀</h1>
+<p class="canva-text mt-4 leading-relaxed max-w-xl" data-template-id="intro">穿越臺灣戰後經濟發展的重要年代，回答15道題目，收集能量，完成時空任務！</p>
+</div>
+<div aria-hidden="true" class="orbit mx-auto">
+<span class="ship">🚀</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+<div>
+<p class="canva-text eyebrow mb-3" data-template-id="energy-label">時空能量</p>
+<div aria-label="已收集 0 / 15 格能量" class="flex flex-wrap gap-1.5 max-w-[450px]" id="energy-meter" role="img"><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span> <span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span> <span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span><span class="energy-dot"></span>
+</div>
+</div>
+<div class="text-right">
+<p class="canva-text eyebrow mb-1" data-template-id="progress-label">挑戰進度</p>
+<p aria-live="polite" class="font-bold text-[#62dfd6]" id="progress-value">準備起航</p>
+<p class="canva-text eyebrow mt-3 mb-1" data-template-id="timer-label">挑戰時間</p>
+<p aria-live="polite" class="font-bold text-[#ffbb73]" id="timer-value">00:00</p>
+</div>
+</div>
+<section class="canva-panel reveal rounded-2xl border border-[#49677b] p-6 sm:p-8" data-template-id="start-panel" id="start-screen">
+<h2 class="canva-text font-bold mb-3" data-template-id="start-title">準備啟動時空飛船！</h2>
+<p class="canva-text leading-relaxed mb-6" data-template-id="start-description">從土地改革、美援、加工出口區，到十大建設與高科技產業，一起探索臺灣經濟發展的軌跡。全程15題，答對即可獲得一格能量。</p><button class="canva-button primary rounded-xl px-7 py-3 font-bold" data-template-id="start-button" id="start-button" type="button">開始挑戰</button>
+</section>
+<section aria-label="時空闖關" hidden="" id="game-screen">
+<aside aria-live="polite" class="canva-panel rounded-2xl border border-[#527383] bg-[#18364d] p-5 mb-6" data-template-id="npc-panel">
+<p class="canva-text eyebrow mb-2" data-template-id="npc-name">時空導航員</p>
+<p class="canva-text leading-relaxed" data-template-id="npc-hint">仔細閱讀題目，找出時代發展的線索！</p>
+</aside>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-1">第一章｜基礎探索 · 第1題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-1">民國38年政府推動「三七五減租」政策，最主要的目的為何？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q1-a" type="button">A. 提高地主收取的土地租金</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q1-b" type="button">B. 降低農民的地租負擔，安定農村生活</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q1-c" type="button">C. 強制收購所有農田變更為工業區</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q1-d" type="button">D. 鼓勵農民離開農村前往都市工廠上班</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-1">解析：「三七五減租」規定農民繳給地主的地租不得超過全年收穫量的37.5%，有效降低農民租金負擔並改善生活。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-2">第一章｜基礎探索 · 第2題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-2">民國40～50年代美援期間，美國向臺灣提供了哪些物資，進而改變臺灣人的飲食習慣？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q2-a" type="button">A. 稻米與牛肉</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q2-b" type="button">B. 麵粉與奶粉</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q2-c" type="button">C. 蔗糖與茶葉</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q2-d" type="button">D. 咖啡與馬鈴薯</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-2">解析：美援提供的麵粉和奶粉，使麵食（如饅頭、麵條）與乳製品在臺灣逐漸普及。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-3">第一章｜基礎探索 · 第3題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-3">臺灣第一個加工出口區於民國55年（西元1966年）設立在哪一個都市？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q3-a" type="button">A. 新竹市</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q3-b" type="button">B. 臺北市</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q3-c" type="button">C. 高雄市</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q3-d" type="button">D. 臺中市</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-3">解析：臺灣第一個加工出口區設立於鄰近港口的高雄（今高雄前鎮區），方便進口原料與海運外銷。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-4">第一章｜基礎探索 · 第4題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-4">民國67年全線通車的「中山高速公路」（國道1號），對臺灣社會帶來的最大便利是什麼？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q4-a" type="button">A. 徹底解決了都市車流與交通塞車問題</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q4-b" type="button">B. 大幅縮短南北運輸時間，形成「南北一日生活圈」</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q4-c" type="button">C. 使鐵路運輸完全被淘汰</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q4-d" type="button">D. 減少了公路周邊工廠與住宅的建設</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-4">解析：中山高速公路串聯西部主要都市，大幅提升交通效率，逐漸形成「南北一日生活圈」。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-5">第一章｜基礎探索 · 第5題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-5">民國69年，政府為了奠定高科技產業發展基礎，成立了臺灣第一座科學園區，該園區位於何處？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q5-a" type="button">A. 中部科學園區</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q5-b" type="button">B. 南部科學園區</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q5-c" type="button">C. 新竹科學園區</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q5-d" type="button">D. 內湖科技園區</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-5">解析：政府於民國69年在新竹設立第一座科學園區（竹科），引進新技術並培育高科技人才。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-6">第二章｜進階任務 · 第6題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-6">關於「耕者有其田」政策實施後對地主的影響，下列敘述何者符合教材內容？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q6-a" type="button">A. 地主完全沒有獲得任何補償</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q6-b" type="button">B. 政府強制將地主的土地改為免費觀光景點</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q6-c" type="button">C. 地主獲得補償金（或股票、債券）後，轉而投入工商業發展</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q6-d" type="button">D. 地主可以任意調漲耕地的租金</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-6">解析：政府徵收私有耕地轉售農民，地主獲得實物債券與公營事業股票等補償，部分地主轉而投入工商業，間接促進工商業起步。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-7">第二章｜進階任務 · 第7題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-7">美援時期，臺灣民眾將裝麵粉的純棉布袋重新利用改製成家常服或內衣，當時人們稱這種耐用布料為何？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q7-a" type="button">A. 卡動（Cotton）</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q7-b" type="button">B. 尼龍（Nylon）</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q7-c" type="button">C. 絲綢（Silk）</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q7-d" type="button">D. 麻布（Linen）</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-7">解析：裝麵粉的布袋多以美國純棉製成，質地耐用，當時人們稱它為「卡動」，即英文Cotton（棉花）的音譯。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-8">第二章｜進階任務 · 第8題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-8">民國50年代加工出口區設立後，對當時社會的女性帶來了什麼顯著的改變？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q8-a" type="button">A. 限制女性只能留在家中做家務</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q8-b" type="button">B. 吸引女性進入工廠工作，改善家庭經濟並提升女性社經地位</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q8-c" type="button">C. 強制所有女性必須進入大學就讀</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q8-d" type="button">D. 導致女性不再參與任何社會生產</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-8">解析：加工出口區吸引女性進入工廠成為生產線勞動力，領取穩定薪資，改善家庭經濟並提升社經地位。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-9">第二章｜進階任務 · 第9題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-9">民國60年代，政府推動「十大建設」除了因應國內用電與交通需求外，當時國際上爆發了什麼事件衝擊全球經濟？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q9-a" type="button">A. 國際糧食危機</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q9-b" type="button">B. 國際能源危機（石油價格飆漲）</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q9-c" type="button">C. 全球氣候變遷危機</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q9-d" type="button">D. 亞洲金融風暴</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-9">解析：民國60年代國際爆發石油危機，油價飆漲造成國際經濟不景氣，政府推動十大建設以提升國家競爭力。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-10">第二章｜進階任務 · 第10題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-10">高雄早期依靠港口發展鋼鐵、石化與造船重工業，後來為什麼必須推動「產業轉型」？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q10-a" type="button">A. 因為港口完全乾涸無法停泊船隻</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q10-b" type="button">B. 因為工廠帶來空氣與水質汙染，需轉型為兼具環保、科技與觀光文化的都市</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q10-c" type="button">C. 因為國外不再需要任何鋼鐵產品</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q10-d" type="button">D. 因為所有重工業工廠被強制遷往花蓮</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-10">解析：重工業雖然創造就業，但帶來空氣與河川汙染；政府與企業推動汙染管制與公園綠地，朝兼具環保、觀光與文化的都市轉型。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-11">第三章｜終極挑戰 · 第11題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-11">新竹科學園區之所以能成功形成高科技產業聚落，其關鍵的「產學合作」模式包含下列何者？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q11-a" type="button">A. 完全謝絕任何大學與學術機構參與研發</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q11-b" type="button">B. 結合鄰近大學（如清華、陽明交大）與研究機構（如工研院）培育人才與應用研發成果</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q11-c" type="button">C. 強制所有農民放棄土地轉職為科技工程師</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q11-d" type="button">D. 規定園區內只能生產傳統手工業產品</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-11">解析：竹科結合周邊的工研院、清華大學與陽明交通大學，提供研究與技術人才來源，促成產業聚落穩定發展。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-12">第三章｜終極挑戰 · 第12題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-12">晶圓是發展人工智慧（AI）與科技產品的重要基礎。關於臺灣晶圓產業的發展成就，下列敘述何者正確？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q12-a" type="button">A. 臺灣的高階晶圓製造技術與市占率在全球處於領先地位</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q12-b" type="button">B. 臺灣完全沒有設計晶片的能力，只能完全進口外國晶片</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q12-c" type="button">C. 晶圓製造屬於傳統農業，完全不需要消耗電力與水資源</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q12-d" type="button">D. 臺灣生產的晶圓僅能供給國內使用，無法外銷國際</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-12">解析：臺灣先進晶片製造技術居全球領先地位，並具有重要的晶片設計產業，在全球AI產業鏈中扮演關鍵角色。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-13">第三章｜終極挑戰 · 第13題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-13">高科技產業雖然帶來亮眼的經濟成績，但也帶來不少社會與環境新挑戰。下列何者不屬於教材所述的挑戰？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q13-a" type="button">A. 水資源與電力的龐大需求</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q13-b" type="button">B. 科學園區擴建帶來的土地開發壓力</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q13-c" type="button">C. 從業人員面臨工時過長的壓力</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q13-d" type="button">D. 導致臺灣經濟退回自給自足的農業社會</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-13">解析：高科技發展帶來水電需求增加、土地開發壓力及員工高工時等課題；選項D不符事實。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-14">第三章｜終極挑戰 · 第14題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-14">環保團體主張政府在規劃產業用地時，應優先使用「既有閒置工業區或受汙染土地」，減少開發農業綠地。這種原則被稱為什麼？</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q14-a" type="button">A. 綠地優先原則</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q14-b" type="button">B. 褐地優先原則</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q14-c" type="button">C. 農地重劃原則</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q14-d" type="button">D. 租賃優先原則</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-14">解析：「褐地優先」主張優先活化既有閒置工業區或受汙染土地（褐地），以保護農業綠地與生態環境。</p>
+</div>
+</div>
+<div class="level reveal" hidden="">
+<p class="canva-tag eyebrow mb-3" data-template-id="era-15">第三章｜終極挑戰 · 第15題</p>
+<h2 class="canva-text font-bold leading-snug mb-6" data-template-id="question-15">請依據教材內容，選出臺灣戰後經濟發展歷程的正確時間順序。</h2>
+<div class="grid gap-3">
+<button class="canva-button choice text-left rounded-xl p-4" data-template-id="q15-a" type="button">A. 土地改革與美援 → 推動民生工業與加工出口區 → 十大建設與重工業 → 成立科學園區與高科技產業</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q15-b" type="button">B. 成立科學園區 → 十大建設 → 加工出口區 → 土地改革</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q15-c" type="button">C. 十大建設 → 土地改革 → 科學園區 → 加工出口區</button><button class="canva-button choice text-left rounded-xl p-4" data-template-id="q15-d" type="button">D. 加工出口區 → 科學園區 → 土地改革 → 十大建設</button>
+</div>
+<div class="feedback mt-6 rounded-xl border border-[#527383] bg-[#18364d] p-5" hidden="">
+<p aria-live="polite" class="feedback-status font-bold text-[#62dfd6] mb-2"></p>
+<p class="canva-text leading-relaxed" data-template-id="explanation-15">解析：依年代順序為：戰後初期土地改革與美援 → 民國40～50年代民生工業與加工出口區 → 民國60年代十大建設 → 民國69年成立新竹科學園區。</p>
+</div>
+</div><button class="canva-button primary rounded-xl px-7 py-3 font-bold mt-6" data-template-id="next-button" hidden="" id="next-button" type="button">前往下一題 →</button> <button class="canva-button primary rounded-xl px-7 py-3 font-bold mt-6" data-template-id="finish-button" hidden="" id="finish-button" type="button">完成任務 →</button>
+</section>
+<section class="canva-panel reveal rounded-2xl border border-[#49677b] p-6 sm:p-8" data-template-id="end-panel" hidden="" id="end-screen">
+<p class="canva-text leading-relaxed mb-4" data-template-id="certificate-prompt">恭喜完成時空任務！輸入姓名即可領取冒險證書。</p><label class="canva-text block font-bold mb-2" data-template-id="student-name-label" for="student-name">挑戰者姓名</label> <input autocomplete="name" class="canva-input w-full rounded-xl border border-[#527383] bg-[#102a42] p-3 text-[#f4f5ed] mb-4" data-template-id="student-name-input" id="student-name" maxlength="30" type="text"/> <button class="canva-button primary rounded-xl px-7 py-3 font-bold mb-5" data-template-id="certificate-button" id="certificate-button" type="button">領取證書</button>
+<div class="rounded-2xl border-2 border-[#ffbb73] bg-[#17334a] p-6 text-center" data-template-id="certificate-panel" hidden="" id="certificate">
+<p class="canva-text eyebrow mb-3" data-template-id="certificate-heading">臺灣經濟時空冒險證書</p>
+<h3 class="font-bold text-2xl text-[#ffbb73] mb-3" id="certificate-student"></h3>
+<p class="canva-text leading-relaxed" data-template-id="certificate-body">恭喜你完成15題臺灣戰後經濟發展挑戰，展現了探索歷史與思考社會變遷的精神！</p>
+<p class="canva-text mt-5 text-sm" data-template-id="designer-credit">設計者：桃園市大竹國小林芳全老師</p>
+</div>
+<p class="canva-text eyebrow mb-3" data-template-id="end-kicker">MISSION COMPLETE</p>
+<h2 class="canva-text font-bold mb-3" data-template-id="end-title">時空任務完成！</h2>
+<p aria-live="polite" class="font-bold text-[#62dfd6] text-2xl mb-3" id="final-score"></p>
+<p class="canva-text leading-relaxed mb-6" data-template-id="end-description">每一次挑戰都是認識臺灣發展的機會。想再試一次嗎？</p><button class="canva-button primary rounded-xl px-7 py-3 font-bold" data-template-id="restart-button" id="restart-button" type="button">重新挑戰</button>
+</section>
+</div>
+</main>
+<footer class="text-center px-5 pb-8">
+<p class="canva-text" data-template-id="footer-note">從土地改革到科技產業，一起探索臺灣的發展故事</p>
+<p class="canva-text mt-2" data-template-id="designer-note">設計者：桃園市大竹國小林芳全老師</p>
+</footer>
+</div>
+<script>
+    const levels = [...document.querySelectorAll('.level')];
+    // Each number is the zero-based position of that question's correct option.
+    const correctChoices = [1,1,2,1,2,2,0,1,1,1,1,0,3,1,0];
+    const dots = [...document.querySelectorAll('.energy-dot')];
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const endScreen = document.getElementById('end-screen');
+    const nextButton = document.getElementById('next-button');
+    const finishButton = document.getElementById('finish-button');
+    const progressValue = document.getElementById('progress-value');
+    let current = 0;
+    let energy = 0;
+    let elapsedSeconds = 0;
+    let timerId = null;
+    const timerValue = document.getElementById('timer-value');
+    const npcHint = document.querySelector('[data-template-id="npc-hint"]');
+    const hints = ['先讀懂題目中的關鍵詞，再逐一排除不合理的選項。','想想這個時代的產業特色：農業、製造、科技各有線索。','不要急著猜答案，回想課堂上看過的發展順序。'];
+    function formatTime(seconds) { return `${String(Math.floor(seconds / 60)).padStart(2,'0')}:${String(seconds % 60).padStart(2,'0')}`; }
+    function startTimer() { clearInterval(timerId); elapsedSeconds = 0; timerValue.textContent = '00:00'; timerId = setInterval(() => { elapsedSeconds++; timerValue.textContent = formatTime(elapsedSeconds); }, 1000); }
+
+    function updateDisplay() {
+      dots.forEach((dot, index) => dot.classList.toggle('on', index < energy));
+      document.getElementById('energy-meter').setAttribute('aria-label', `已收集 ${energy} / ${levels.length} 格能量`);
+      progressValue.textContent = `第 ${current + 1} / ${levels.length} 題`;
+    }
+    function showLevel(index) {
+      current = index;
+      levels.forEach((level, i) => {
+        level.hidden = i !== index;
+        if (i === index) {
+          level.classList.remove('reveal');
+          void level.offsetWidth;
+          level.classList.add('reveal');
+        }
+      });
+      nextButton.hidden = true;
+      finishButton.hidden = true;
+      npcHint.textContent = hints[index % hints.length];
+      updateDisplay();
+    }
+    document.getElementById('start-button').addEventListener('click', () => {
+      startScreen.hidden = true;
+      gameScreen.hidden = false;
+      startTimer();
+      showLevel(0);
+    });
+    levels.forEach((level, levelIndex) => {
+      level.querySelectorAll('.choice').forEach((button, optionIndex) => {
+        button.addEventListener('click', () => {
+          const feedback = level.querySelector('.feedback');
+          if (levelIndex !== current || !feedback.hidden) return;
+          const correct = optionIndex === correctChoices[levelIndex];
+          if (correct) {
+            energy++;
+            const earnedDot = dots[energy - 1];
+            if (earnedDot) {
+              earnedDot.classList.remove('on');
+              void earnedDot.offsetWidth;
+              earnedDot.classList.add('on');
+            }
+          }
+          level.querySelectorAll('.choice').forEach((option, index) => {
+            option.disabled = true;
+            if (index === correctChoices[levelIndex]) option.classList.add('correct');
+          });
+          if (!correct) button.classList.add('incorrect');
+          level.querySelector('.feedback-status').textContent = correct ? '✓ 答對了！獲得一格能量' : '↗ 這題再認識一下！';
+          feedback.hidden = false;
+          if (levelIndex === levels.length - 1) finishButton.hidden = false;
+          else nextButton.hidden = false;
+          updateDisplay();
+        });
+      });
+    });
+    nextButton.addEventListener('click', () => showLevel(current + 1));
+    finishButton.addEventListener('click', () => {
+      clearInterval(timerId);
+      gameScreen.hidden = true;
+      endScreen.hidden = false;
+      progressValue.textContent = '任務完成';
+      document.getElementById('final-score').textContent = `收集能量：${energy} / ${levels.length}｜用時 ${formatTime(elapsedSeconds)}`;
+    });
+    document.getElementById('certificate-button').addEventListener('click', () => {
+      const name = document.getElementById('student-name').value.trim();
+      if (!name) { document.getElementById('student-name').focus(); return; }
+      document.getElementById('certificate-student').textContent = name;
+      document.getElementById('certificate').hidden = false;
+    });
+    document.getElementById('restart-button').addEventListener('click', () => {
+      energy = 0;
+      levels.forEach(level => {
+        level.querySelector('.feedback').hidden = true;
+        level.querySelector('.feedback-status').textContent = '';
+        level.querySelectorAll('.choice').forEach(button => {
+          button.disabled = false;
+          button.classList.remove('correct','incorrect');
+        });
+      });
+      endScreen.hidden = true;
+      gameScreen.hidden = false;
+      startTimer();
+      showLevel(0);
+    });
+  </script>
+</body>
+</html>
